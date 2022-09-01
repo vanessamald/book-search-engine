@@ -1,4 +1,4 @@
-const { User } = require('../models/User');
+const { User } = require('../models');
 const { signToken } = require('../utils/auth.js');
 
 const resolvers = {
@@ -13,7 +13,11 @@ const resolvers = {
     },
     Mutation: {
         addUser: async (parent, args) => {
+            console.log(args);
+            //const { username, email, password } = args;
+            //console.log(username, email, password);
             const user = await User.create(args);
+            //const user = await User.create(args);
             console.log(user);
             const token = signToken(user);
             return { token, user };
