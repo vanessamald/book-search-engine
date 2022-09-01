@@ -25,11 +25,10 @@ const resolvers = {
             res.cookie('token', token, { httpOnly: true });
             return { user, token };
         },
-        addUser: async (_, { name, email, password }, { res }) => {
-            const user = await User.create({ name, email, password });
-            const token = signToken(user._id);
-            res.cookie('token', token, { httpOnly: true });
-            return user;
+        addUser: async (parent, args) => {
+            const user = await User.create(args);
+            const token = signToken(user);
+            return { user, token };
         },
         saveBook: async (_, { title, author, published, genres }, { req }) => {
             const user = await User.findById(req.userId);
