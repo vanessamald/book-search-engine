@@ -15,11 +15,12 @@ const SignupForm = () => {
   // set state for alert
   const [showAlert, setShowAlert] = useState(false);
 
-  const [ addUser ] = useMutation(ADD_USER);
+  const [ addUser, {error} ] = useMutation(ADD_USER);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setUserFormData({ ...userFormData, [name]: value });
+    console.log(userFormData);
   };
 
   const handleFormSubmit = async (event) => {
@@ -33,21 +34,24 @@ const SignupForm = () => {
     }
 
     try {
-      const response = await addUser({
+      const { data } = await addUser({
         variables: { ...userFormData },
       });
+      console.log(data);
 
-    Auth.login(response.addUser.token);
+    Auth.login(data.addUser.token);
+
     } catch (err) {
-      console.error(err);
+      console.error(error);
       setShowAlert(true);
     }
-
+/*
     setUserFormData({
-      username: '',
-      email: '',
-      password: '',
+      username: "",
+      email: "",
+      password: "",
     });
+*/
   };
 
   return (

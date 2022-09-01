@@ -12,23 +12,24 @@ const resolvers = {
         }
     },
     Mutation: {
-        login: async (_, { email, password }, { res }) => {
+        addUser: async (parent, args) => {
+            const user = await User.create(args);
+            console.log(user);
+            const token = signToken(user);
+            return { token, user };
+        },
+        login: async (parent, {email, password}) => {
             const user = await User.findOne({ email });
+
             if (!user) {
                 throw new Error('No user found');
             }
-            const isEqual = await bcrypt.compare(password, user.password);
-            if (!isEqual) {
-                throw new Error('Password is incorrect');
+           const correctPw = await user.isCorrectPassword(password);
+            if (!correctPw) {
+            throw new AuthenticationError('Incorrect credentials');
             }
-            const token = signToken(user._id);
-            res.cookie('token', token, { httpOnly: true });
-            return { user, token };
-        },
-        addUser: async (parent, args) => {
-            const user = await User.create(args);
             const token = signToken(user);
-            return { user, token };
+            return { token, user };
         },
         saveBook: async (_, { title, author, published, genres }, { req }) => {
             const user = await User.findById(req.userId);
